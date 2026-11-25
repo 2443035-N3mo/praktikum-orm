@@ -1,0 +1,66 @@
+### Uji API Praktikum ORM (ekstensi VS Code "REST Client": klik "Send Request")
+### Jalankan dulu: php artisan migrate:fresh --seed && php artisan serve
+
+@base = http://127.0.0.1:8000/api/v1
+
+### 1. Daftar mahasiswa + jumlah surat -> 200
+GET {{base}}/mahasiswa?q=andi
+Accept: application/json
+
+### 2. Tambah mahasiswa -> 201 (id = 23)
+POST {{base}}/mahasiswa
+Accept: application/json
+Content-Type: application/json
+
+{"nim": "2301050", "nama": "Rina Wulandari", "prodi": "Sistem Informasi", "angkatan": 2023}
+
+### 3. Validasi gagal -> 422
+POST {{base}}/mahasiswa
+Accept: application/json
+Content-Type: application/json
+
+{"nim": "2201001", "nama": "", "angkatan": 1990}
+
+### 4. Ubah sebagian data -> 200
+PATCH {{base}}/mahasiswa/23
+Accept: application/json
+Content-Type: application/json
+
+{"prodi": "Teknik Informatika"}
+
+### 5. Detail mahasiswa + surat + jenis surat (eager loading) -> 200
+GET {{base}}/mahasiswa/1
+Accept: application/json
+
+### 6. Ajukan surat (transaksi: surat + riwayat) -> 201
+POST {{base}}/surat
+Accept: application/json
+Content-Type: application/json
+
+{"mahasiswa_id": 23, "jenis_surat_id": 3, "keperluan": "Penelitian skripsi di Diskominfo."}
+
+### 7. Ubah status -> 200
+PATCH {{base}}/surat/23/status
+Accept: application/json
+Content-Type: application/json
+
+{"status": "diproses", "catatan": "Verifikasi BAAK"}
+
+### 8. Aturan bisnis menolak (Selesai -> Diproses) -> 422
+PATCH {{base}}/surat/1/status
+Accept: application/json
+Content-Type: application/json
+
+{"status": "diproses"}
+
+### 9. Hapus mahasiswa (surat ikut terhapus / cascade) -> 204
+DELETE {{base}}/mahasiswa/23
+Accept: application/json
+
+### 10. Surat milik mahasiswa yang dihapus -> 404
+GET {{base}}/surat/23
+Accept: application/json
+
+### Bonus: filter surat per status + paginasi
+GET {{base}}/surat?status=diproses&per_page=5
+Accept: application/json
