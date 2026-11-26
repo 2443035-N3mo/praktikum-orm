@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Enums\StatusSurat;
 use DomainException;
 use Illuminate\Database\Eloquent\Builder;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class Surat extends Model
 {
+    use SoftDeletes;
     protected $table = 'surat';
 
     protected $fillable = ['mahasiswa_id', 'jenis_surat_id', 'keperluan'];
@@ -33,11 +35,6 @@ class Surat extends Model
     public function jenisSurat(): BelongsTo
     {
         return $this->belongsTo(JenisSurat::class);
-    }
-
-    public function show(Surat $surat)
-    {
-    return ['data' => $surat->load('mahasiswa', 'jenisSurat', 'riwayat', 'disetujuiOleh')];
     }
 
     public function disetujuiOleh(): BelongsTo

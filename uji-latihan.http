@@ -1,0 +1,29 @@
+@base = http://127.0.0.1:8000/api/v1
+
+### L1. Hapus jenis surat yang masih dipakai -> 409
+DELETE {{base}}/jenis-surat/1
+Accept: application/json
+
+### L2. Statistik -> 200
+GET {{base}}/statistik
+Accept: application/json
+
+### L3. Detail surat 1 + dosen penyetuju -> 200
+GET {{base}}/surat/1
+Accept: application/json
+
+### L4a. Hapus surat (soft delete) -> 204
+DELETE {{base}}/surat/5
+Accept: application/json
+
+### L4b. Surat terhapus tidak bisa dibuka -> 404
+GET {{base}}/surat/5
+Accept: application/json
+
+### L4c. Daftar surat terhapus -> 200
+GET {{base}}/surat-terhapus
+Accept: application/json
+
+### L4d. Pulihkan surat -> 200
+POST {{base}}/surat/5/pulihkan
+Accept: application/json

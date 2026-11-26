@@ -14,4 +14,6 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('surat', SuratController::class)->except('update');
     Route::patch('surat/{surat}/status', [SuratController::class, 'ubahStatus']);
     Route::get('statistik', StatistikController::class);
+    Route::get('surat-terhapus', [SuratController::class, 'terhapus']);
+    Route::post('surat/{id}/pulihkan', [SuratController::class, 'pulihkan'])->whereNumber('id');
 });

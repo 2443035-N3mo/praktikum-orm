@@ -62,6 +62,26 @@ class SuratController extends Controller
         return ['data' => $surat->load('riwayat')];
     }
 
+        /** GET /api/v1/surat-terhapus */
+    public function terhapus(Request $request)
+    {
+        return Surat::onlyTrashed()
+            ->with(['mahasiswa:id,nim,nama', 'jenisSurat:id,nama'])
+            ->latest('deleted_at')
+            ->paginate($request->integer('per_page', 10))
+            ->withQueryString();
+    }
+
+        /** POST /api/v1/surat/{id}/pulihkan */
+    public function pulihkan(int $id)
+    {
+        // {surat} biasa tidak menemukan surat terhapus, jadi dicari manual
+        $surat = Surat::onlyTrashed()->findOrFail($id);
+        $surat->restore();
+
+        return ['data' => $surat->load('mahasiswa', 'jenisSurat', 'riwayat')];
+    }
+    
     /** DELETE /api/v1/surat/{surat} */
     public function destroy(Surat $surat)
     {
